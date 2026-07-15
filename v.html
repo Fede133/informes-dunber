@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang='es'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Abriendo informe — Dunber S.A.</title>
+<style>
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',system-ui,sans-serif;background:#f6f8f3;color:#1b2117}
+@media(prefers-color-scheme:dark){body{background:#131611;color:#e7ecdf}}
+.card{text-align:center;padding:40px 30px;max-width:380px}
+.spin{width:38px;height:38px;border:4px solid #dfe4d9;border-top-color:#4f8a10;border-radius:50%;margin:0 auto 18px;animation:g 1s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+p{color:#5c6657;font-size:14px;line-height:1.5}
+@media(prefers-color-scheme:dark){p{color:#98a290}}
+.err{color:#c05a3a;display:none}
+</style>
+</head>
+<body>
+<div class='card'>
+  <div class='spin' id='spin'></div>
+  <h3 id='msg'>Publicando el informe…</h3>
+  <p id='sub'>Puede tardar hasta un minuto la primera vez. Esta página se actualiza sola.</p>
+  <p class='err' id='err'>No se pudo encontrar el informe. Verificá el link o intentá de nuevo en unos minutos.</p>
+</div>
+<script>
+(function(){
+  var i=new URLSearchParams(location.search).get('i')||'';
+  if(!/^[0-9]{4}/[0-9]{2}/[A-Za-z0-9_.-]+.html$/.test(i)){ mostrarError(); return; }
+  var destino=location.pathname.replace(/v.html$/,'')+i;
+  var intentos=0;
+  function probar(){
+    fetch(destino,{method:'HEAD',cache:'no-store'}).then(function(r){
+      if(r.ok){ location.replace(destino); return; }
+      reintentar();
+    }).catch(reintentar);
+  }
+  function reintentar(){
+    intentos++;
+    if(intentos>40){ mostrarError(); return; }
+    setTimeout(probar, 5000);
+  }
+  function mostrarError(){
+    document.getElementById('spin').style.display='none';
+    document.getElementById('msg').textContent='Informe no disponible';
+    document.getElementById('sub').style.display='none';
+    document.getElementById('err').style.display='block';
+  }
+  probar();
+})();
+</script>
+</body>
+</html>
