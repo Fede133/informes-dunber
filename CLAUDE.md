@@ -171,18 +171,16 @@ Oro` · `Sell Out` · `SOVI` (Share of Visible Inventory) · `preventa` /
 `location.replace` en cuanto el archivo existe. Sirve para links que se envían
 *antes* de que el commit termine de propagarse a Pages.
 
-**Bug conocido:** en `v.html:28` el literal de regex tiene las barras internas
-sin escapar:
+El parámetro `i` se valida contra
+`/^[0-9]{4}\/[0-9]{2}\/[A-Za-z0-9_.-]+\.html$/` antes de armar el destino: sólo
+acepta `YYYY/MM/archivo.html`, con lo cual no se puede usar `v.html` para
+redirigir a un dominio externo ni para salir del directorio.
 
-```js
-if(!/^[0-9]{4}/[0-9]{2}/[A-Za-z0-9_.-]+.html$/.test(i)){ … }
-```
-
-Eso es un `SyntaxError` de parseo, así que el IIFE entero nunca corre: la página
-queda con el spinner girando para siempre y nunca redirige ni muestra el error.
-Debería ser `/^[0-9]{4}\/[0-9]{2}\/[A-Za-z0-9_.-]+\.html$/` (y conviene escapar
-también el `.` antes de `html`). No lo arreglé porque está fuera del alcance de
-esta tarea; corregirlo es un cambio de una línea.
+**Bug ya corregido (no reintroducir):** hasta agosto 2026 ese literal de regex
+tenía las barras internas sin escapar (`/^[0-9]{4}/[0-9]{2}/…/`), lo que es un
+`SyntaxError` de parseo: el IIFE entero nunca corría y la página quedaba con el
+spinner girando para siempre, sin redirigir ni mostrar el error. Si tocás esta
+línea, acordate de que las `/` y el `.` de `.html` van escapados.
 
 ## Seguridad y privacidad
 
